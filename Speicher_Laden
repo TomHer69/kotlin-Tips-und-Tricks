@@ -1,0 +1,95 @@
+package com.example.myapplication
+
+import android.content.Context
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Label
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.myapplication.ui.theme.MyApplicationTheme
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            MyApplicationTheme {
+
+                    Greeting()
+
+            }
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    MyApplicationTheme {
+        Greeting()
+    }
+}
+
+
+@Composable
+fun Greeting() {
+    val context = LocalContext.current
+    var text by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("Hallo") }
+    var inputText by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    )
+
+
+    {
+
+        Text(text = text)
+
+
+        OutlinedTextField(
+            value = inputText,
+            onValueChange = { inputText = it },
+            label = { Text("Text eingeben") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+
+        Button(onClick = { saveTextToFile(context, "example.txt", inputText) })
+        {
+            Text("speichern")
+        }
+
+
+        Button(onClick = { text = readTextFromFile(context, "example.txt") })
+        {
+            Text("Laden")
+        }
+    }
+
+}
+
+fun saveTextToFile(context: Context, fileName: String, text: String) {
+    context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
+        it.write(text.toByteArray())
+    }
+}
+
+fun readTextFromFile(context: Context, fileName: String): String {
+    return context.openFileInput(fileName).bufferedReader().useLines { lines ->
+        lines.joinToString("\n")
+    }}
